@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <title>Home</title>
+    <title>Serie</title>
 </head>
 
 <body>
@@ -41,8 +41,17 @@
         </div>
     </nav>
     <div class="container">
-        <h1>Home</h1>
-        <img class="img-thumbnail" src="images/home.png" style="width: 50rem;">
+        <h1 id="titulo">Serie</h1>
+
+        <div class="card" style="width: 40rem;">
+            <img id="cardimagen" src="#" class="card-img-top">
+            <div class="card-body">
+                <h5 id="cardtitulo" class="card-title"></h5>
+                <h6 id="cardsubtitulo" class="card-subtitle mb-2 text-muted"></h6>
+                <a id="cardlink" href="#" class="btn btn-primary">Personajes</a>
+            </div>
+        </div>
+
     </div>
     <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
@@ -50,7 +59,28 @@
     <script>
         $(document).ready(function () {
             globalPintarSeries("#listaseries");
+            var params = new window.URLSearchParams(window.location.search);
+            var id = params.get('id');
+            console.log(params.get('id'));
+            $("#titulo").append(" " + id);
+            cargarSerie(id);
         });
+
+        function cargarSerie(id) {
+            var request = "api/series/" + id;
+            var url=globalUrlApiSeries+request;
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json",
+                success: function (data) {
+                    $("#cardimagen").attr("src",data.imagen);
+                    $("#cardtitulo").text(data.nombre);
+                    $("#cardsubtitulo").text("IMDB: "+data.puntuacion);
+                    $("#cardlink").attr("href","Personajes.html?id="+id);
+                }
+            });
+        }
     </script>
 </body>
 

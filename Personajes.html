@@ -41,8 +41,18 @@
         </div>
     </nav>
     <div class="container">
-        <h1>Home</h1>
-        <img class="img-thumbnail" src="images/home.png" style="width: 50rem;">
+        <h1 id="titulo">Personajes</h1>
+        <table id="tablapersonajes" class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th>Personaje</th>
+                    <th>Imagen</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
     </div>
     <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
@@ -50,7 +60,33 @@
     <script>
         $(document).ready(function () {
             globalPintarSeries("#listaseries");
+            var params = new window.URLSearchParams(window.location.search);
+            var id = params.get('id');
+            console.log(params.get('id'));
+            $("#titulo").append(" " + id);
+            cargarPersonajes(id);
         });
+
+        function cargarPersonajes(id) {
+            var request = "api/series/personajesserie/" + id;
+            var url=globalUrlApiSeries+request;
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json",
+                success: function (data) {
+                    var html="";
+                    console.log(data);
+                    $.each(data, function (index, personaje) { 
+                         html+="<tr>";
+                         html+="<td>"+personaje.nombre+"</td>";
+                         html+="<td><img class='img rounded' style='width: 7rem;height: 7rem;' src='"+personaje.imagen+"'/></td>";
+                         html+="</tr>";
+                    });
+                    $("#tablapersonajes tbody").html(html);
+                }
+            });
+        }
     </script>
 </body>
 

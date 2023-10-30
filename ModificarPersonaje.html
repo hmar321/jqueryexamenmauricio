@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <title>Home</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="Home.html">Series</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="Home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="NuevoPersonaje.html">Nuevo personaje</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ModificarPersonaje.html">Modificar personaje</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Series
+                        </a>
+                        <ul id="listaseries" class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Modificar personaje</h1>
+        <form>
+            <div class="mb-3" style="width: 20rem;">
+                <select id="cajaserie" class="form-select">
+                    <option value="-1" hidden>Selecciona una serie</option>
+                </select>
+            </div>
+            <div class="mb-3" style="width: 20rem;">
+                <select id="cajapersonaje" class="form-select">
+                    <option value="-1" hidden>Selecciona un personaje</option>
+                </select>
+            </div>
+            <button class="btn btn-info text-white" id="botonguardar">Guardar cambios</button>
+        </form>
+        <div id="divserie" class="mb-3" hidden>
+            <h1 id="tituloserie" class="text-danger"></h1>
+            <img id="imagenserie" src="#" class="img rounded" style="width: 17rem;height: 17rem;">
+        </div>
+        <div id="divpersonaje" class="mb-3" hidden>
+            <h1 id="titulopersonaje" class="text-danger"></h1>
+            <img id="imagenpersonaje" src="#" class="img rounded" style="width: 17rem;height: 17rem;">
+        </div>
+    </div>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/global.js"></script>
+    <script>
+        $(document).ready(function () {
+            globalPintarSeries("#listaseries");
+            cargarSeries();
+            cargarPersonajes();
+            $("#cajaserie").change(function (e) {
+                e.preventDefault();
+                $("#divserie").removeAttr("hidden");
+                seleccionarSerie();
+            });
+            $("#cajapersonaje").change(function (e) {
+                e.preventDefault();
+                $("#divpersonaje").removeAttr("hidden");
+                seleccionarPersonaje();
+            });
+
+            $("#botonguardar").click(function (e) {
+                e.preventDefault();
+                var idserie = $("#cajaserie").val();
+                var idpersonaje = $("#cajapersonaje").val();
+                var request = "api/personajes/" + idpersonaje + "/" + idserie;
+                var url = globalUrlApiSeries + request;
+                $.ajax({
+                    type: "PUT",
+                    url: url,
+                    contentType: "application/json",
+                    success: function () {
+                        window.location.href = "Personajes.html?id=" + idserie;
+                    }
+                });
+            });
+        });
+
+        function cargarSeries(arraySeries) {
+            var request = "api/series";
+            var url = globalUrlApiSeries + request;
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json",
+                success: function (data) {
+                    $.each(data, function (index, serie) {
+                        var option = $("<option>", { text: serie.nombre, value: serie.idSerie });
+                        $("#cajaserie").append(option);
+                    });
+                }
+            });
+        }
+        function cargarPersonajes(arrayPersonajes) {
+            var request = "api/personajes";
+            var url = globalUrlApiSeries + request;
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json",
+                success: function (data) {
+                    $.each(data, function (index, personaje) {
+                        var option = $("<option>", { text: personaje.nombre, value: personaje.idPersonaje });
+                        $("#cajapersonaje").append(option);
+                    });
+                }
+            });
+        }
+
+        function seleccionarSerie() {
+            var idserie = $("#cajaserie").val();
+            var request = "api/series/" + idserie;
+            var url = globalUrlApiSeries + request;
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json",
+                success: function (data) {
+                    $("#tituloserie").text(data.nombre);
+                    $("#imagenserie").attr("src", data.imagen);
+                }
+            });
+
+        }
+        function seleccionarPersonaje() {
+            var idpersonaje = $("#cajapersonaje").val();
+            var request = "api/personajes/" + idpersonaje;
+            var url = globalUrlApiSeries + request;
+            $.ajax({
+                type: "GET",
+                url: url,
+                contentType: "application/json",
+                success: function (data) {
+                    $("#titulopersonaje").text(data.nombre);
+                    $("#imagenpersonaje").attr("src", data.imagen);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
